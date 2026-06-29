@@ -61,6 +61,9 @@ class SnakeGameAI:
                 pygame.quit()
                 quit()
                 
+        # Calculate old distance to food
+        old_dist = np.sqrt((self.head.x - self.food.x)**2 + (self.head.y - self.food.y)**2)
+        
         # 2. Move
         self._move(action)
         self.snake.insert(0, self.head)
@@ -80,6 +83,12 @@ class SnakeGameAI:
             self._place_food()
         else:
             self.snake.pop()
+            # Reward shaping: reward for getting closer to food, penalty for getting further
+            new_dist = np.sqrt((self.head.x - self.food.x)**2 + (self.head.y - self.food.y)**2)
+            if new_dist < old_dist:
+                reward = 1
+            else:
+                reward = -1
             
         # 5. Update UI and clock
         self._update_ui()
@@ -170,59 +179,44 @@ class Agent:
         self.epsilon = 80 # randomness parameter (will decay)
         self.gamma = 0.9  # discount rate
         self.memory = ReplayMemory(100_000)
-        self.model = DQN(state_dim=11, action_dim=3)
+        self.model = DQN(state_dim=32, action_dim=3)
         self.optimizer = optim.Adam(self.model.parameters(), lr=0.001)
         self.criterion = nn.MSELoss()
         
     def get_state(self, game):
         head = game.head
-        point_l = Point(head.x - BLOCK_SIZE, head.y)
-        point_r = Point(head.x + BLOCK_SIZE, head.y)
-        point_u = Point(head.x, head.y - BLOCK_SIZE)
-        point_d = Point(head.x, head.y + BLOCK_SIZE)
         
         dir_l = game.direction == 3
         dir_r = game.direction == 1
         dir_u = game.direction == 0
         dir_d = game.direction == 2
         
-        state = [
-            # Danger straight
-            (dir_r and game.is_collision(point_r)) or
-            (dir_l and game.is_collision(point_l)) or
-            (dir_u and game.is_collision(point_u)) or
-            (dir_d and game.is_collision(point_d)),
-            
-            # Danger right
-            (dir_u and game.is_collision(point_r)) or
-            (dir_d and game.is_collision(point_l)) or
-            (dir_l and game.is_collision(point_u)) or
-            (dir_r and game.is_collision(point_d)),
-            
-            # Danger left
-            (dir_d and game.is_collision(point_r)) or
-            (dir_u and game.is_collision(point_l)) or
-            (dir_r and game.is_collision(point_u)) or
-            (dir_l and game.is_collision(point_d)),
-            
-            # Move direction
-            dir_l,
-            dir_r,
-            dir_u,
-            dir_d,
-            
-            # Food location
+        state = []
+        
+        # Local 5x5 grid (24 binary inputs)
+        for dy in range(-2, 3):
+            for dx in range(-2, 3):
+                if dx == 0 and dy == 0:
+                    continue  # skip head
+                check_pt = Point(head.x + dx * BLOCK_SIZE, head.y + dy * BLOCK_SIZE)
+                state.append(game.is_collision(check_pt))
+        
+        # Move direction
+        state.extend([dir_l, dir_r, dir_u, dir_d])
+        
+        # Food location
+        state.extend([
             game.food.x < game.head.x, # food left
             game.food.x > game.head.x, # food right
             game.food.y < game.head.y, # food up
             game.food.y > game.head.y  # food down
-        ]
+        ])
         
         return np.array(state, dtype=int)
         
     def get_action(self, state):
-        # Epsilon-greedy
-        self.epsilon = max(0, 80 - self.n_games)
+        # Epsilon-greedy (slower decay, keeping a min epsilon of 5% / value 10 for continuous exploration)
+        self.epsilon = max(10, 80 - (self.n_games / 4))
         final_move = [0, 0, 0]
         if random.randint(0, 200) < self.epsilon:
             move = random.randint(0, 2)
@@ -236,6 +230,7 @@ class Agent:
         return final_move
         
     def train_step(self, states, actions, rewards, next_states, dones):
+        self.model.train()
         states = torch.tensor(np.array(states), dtype=torch.float)
         actions = torch.tensor(np.array(actions), dtype=torch.long)
         rewards = torch.tensor(np.array(rewards), dtype=torch.float)
@@ -245,11 +240,11 @@ class Agent:
         # 1: Predicted Q values with current state
         pred = self.model(states)
         
-        target = pred.clone()
+        target = pred.clone().detach()
         for idx in range(len(dones)):
             Q_new = rewards[idx]
             if not dones[idx]:
-                Q_new = rewards[idx] + self.gamma * torch.max(self.model(next_states[idx].unsqueeze(0)))
+                Q_new = rewards[idx] + self.gamma * torch.max(self.model(next_states[idx].unsqueeze(0))).detach()
                 
             # action index
             action_idx = torch.argmax(actions[idx]).item()
@@ -281,19 +276,22 @@ class Agent:
         file_path = os.path.join('./experiments', file_name)
         record = 0
         if os.path.exists(file_path):
-            self.model.load_state_dict(torch.load(file_path))
-            self.model.eval()
-            print(f"Successfully loaded saved model checkpoint from: {file_path}")
-            
-            # Load best score
-            score_path = os.path.join('./experiments', 'best_score.txt')
-            if os.path.exists(score_path):
-                try:
-                    with open(score_path, 'r') as f:
-                        record = int(f.read().strip())
-                    print(f"Successfully loaded best score record: {record}")
-                except Exception:
-                    pass
+            try:
+                self.model.load_state_dict(torch.load(file_path))
+                self.model.eval()
+                print(f"Successfully loaded saved model checkpoint from: {file_path}")
+                
+                # Load best score
+                score_path = os.path.join('./experiments', 'best_score.txt')
+                if os.path.exists(score_path):
+                    try:
+                        with open(score_path, 'r') as f:
+                            record = int(f.read().strip())
+                        print(f"Successfully loaded best score record: {record}")
+                    except Exception:
+                        pass
+            except Exception as e:
+                print(f"Could not load checkpoint ({e}). Starting training with a fresh model.")
         return record
 
 
@@ -305,8 +303,8 @@ def train():
     record = agent.load()  # Load checkpoint & score if exists
     game = SnakeGameAI()
     
-    # Run for 150 games
-    max_games = 150
+    # Run for 300 games
+    max_games = 300
     while agent.n_games < max_games:
         # Get old state
         state_old = agent.get_state(game)

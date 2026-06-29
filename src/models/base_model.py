@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 
 class DQN(nn.Module):
-    def __init__(self, state_dim: int = 11, action_dim: int = 3):
+    def __init__(self, state_dim: int = 32, action_dim: int = 3):
         """
         Deep Q-Network (DQN) for Reinforcement Learning.
         
@@ -12,7 +12,9 @@ class DQN(nn.Module):
         """
         super().__init__()
         self.network = nn.Sequential(
-            nn.Linear(state_dim, 64),
+            nn.Linear(state_dim, 128),
+            nn.ReLU(),
+            nn.Linear(128,64),
             nn.ReLU(),
             nn.Linear(64, 64),
             nn.ReLU(),
@@ -36,8 +38,8 @@ BaseModel = DQN
 
 if __name__ == "__main__":
     # Quick sanity check
-    model = DQN(state_dim=11, action_dim=3)
-    dummy_input = torch.randn(1, 11) # Batch size of 1, state_dim of 11
+    model = DQN(state_dim=32, action_dim=3)
+    dummy_input = torch.randn(1, 32) # Batch size of 1, state_dim of 32
     q_values = model(dummy_input)
     print("DQN verification successful!")
     print(f"Input shape: {dummy_input.shape}")
