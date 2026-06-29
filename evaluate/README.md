@@ -39,3 +39,28 @@ The model was tested over **10 consecutive games** with the following scores:
 
 1. **Successful Spatial Generalization**: During training, the agent **never saw blue obstacle blocks**. However, because its state representation checks a local $5 \times 5$ collision grid around the head, it treats obstacles, walls, and its own body identically as collisions. Therefore, it generalizes seamlessly to avoid obstacles.
 2. **Determinism**: Since exploration is disabled ($\epsilon=0$), the agent takes optimal pathways to food without making risky, random exploratory maneuvers.
+
+---
+
+## 2. Hard / Large Evaluation Environment (`SnakeGameEvalHard`) 🏔️🕷️
+
+We also built a second, significantly more difficult evaluation environment to stretch the boundaries of the model's spatial adaptability:
+
+- **Script**: [evaluate_hard.py](file:///c:/Users/Chamod_Rashmith_UOK/Desktop/programming/Deep%20Learning/project_1/evaluate/evaluate_hard.py)
+- **Large Board Size**: Expanded the environment to **$800 \times 600$ pixels** (much larger than the default training grid).
+- **High-Density Barriers**:
+  - Border inner ridges at all 4 corners.
+  - A long vertical partition on the left ($x=200$).
+  - A long vertical partition on the right ($x=600$).
+  - A horizontal middle wall ($y=300$).
+  - Several isolated pillar blocks acting as obstacles.
+
+### How to Run:
+Run either script from the project root:
+```bash
+# Standard evaluation
+.venv/Scripts/python.exe evaluate/evaluate.py
+
+# Hard evaluation (Large board + dense obstacles)
+.venv/Scripts/python.exe evaluate/evaluate_hard.py
+```
