@@ -18,42 +18,42 @@ Tested over **10 consecutive games**:
 
 | Game Episode | Final Score |
 |---|---|
-| Game 1/10 | 32 |
-| Game 2/10 | **38** 🏆 |
-| Game 3/10 | 18 |
-| Game 4/10 | 29 |
-| Game 5/10 | 28 |
+| Game 1/10 | 19 |
+| Game 2/10 | 26 |
+| Game 3/10 | 22 |
+| Game 4/10 | **41** 🏆 |
+| Game 5/10 | 12 |
 | Game 6/10 | 19 |
-| Game 7/10 | 27 |
-| Game 8/10 | 17 |
-| Game 9/10 | 31 |
-| Game 10/10 | 16 |
+| Game 7/10 | 25 |
+| Game 8/10 | 19 |
+| Game 9/10 | 24 |
+| Game 10/10 | 22 |
 
 #### Summary Statistics
-- **Average Score**: `25.50` (Previously `17.80`)
-- **Max Score**: `38`
-- **Min Score**: `16`
+- **Average Score**: `22.90`
+- **Max Score**: `41`
+- **Min Score**: `12`
 
 ### 2. Hard/Large Environment Evaluation (`evaluate_hard.py`)
 Tested over **10 consecutive games** on a $800 \times 600$ board with high-density barriers:
 
 | Game Episode | Final Score |
 |---|---|
-| Game 1/10 | 1 |
-| Game 2/10 | 0 |
-| Game 3/10 | **28** 🏆 |
-| Game 4/10 | 16 |
-| Game 5/10 | 17 |
-| Game 6/10 | 0 |
-| Game 7/10 | 24 |
-| Game 8/10 | 11 |
-| Game 9/10 | 8 |
-| Game 10/10 | 10 |
+| Game 1/10 | 13 |
+| Game 2/10 | 23 |
+| Game 3/10 | 26 |
+| Game 4/10 | 20 |
+| Game 5/10 | 21 |
+| Game 6/10 | **31** 🏆 |
+| Game 7/10 | 14 |
+| Game 8/10 | 3 |
+| Game 9/10 | 18 |
+| Game 10/10 | 21 |
 
 #### Summary Statistics
-- **Average Score**: `11.50`
-- **Max Score**: `28`
-- **Min Score**: `0`
+- **Average Score**: `19.00`
+- **Max Score**: `31`
+- **Min Score**: `3`
 
 ---
 
