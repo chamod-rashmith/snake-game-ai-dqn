@@ -1,0 +1,43 @@
+{
+  "phases": [
+    {
+      "phase_index": 1,
+      "start_game": 0,
+      "w": 640,
+      "h": 480,
+      "num_random_obstacles": 0,
+      "use_complex_barriers": false,
+      "food_reward": 15,
+      "collision_penalty": -15,
+      "timeout_penalty": -15,
+      "step_penalty": -0.05,
+      "use_bfs_distance": true
+    },
+    {
+      "phase_index": 2,
+      "start_game": 100,
+      "w": 640,
+      "h": 480,
+      "num_random_obstacles": 15,
+      "use_complex_barriers": false,
+      "food_reward": 20,
+      "collision_penalty": -15,
+      "timeout_penalty": -15,
+      "step_penalty": -0.08,
+      "use_bfs_distance": true
+    },
+    {
+      "phase_index": 3,
+      "start_game": 220,
+      "w": 800,
+      "h": 600,
+      "num_random_obstacles": 10,
+      "use_complex_barriers": true,
+      "food_reward": 25,
+      "collision_penalty": -20,
+      "timeout_penalty": -20,
+      "step_penalty": -0.10,
+      "use_bfs_distance": true
+    }
+  ]
+}
