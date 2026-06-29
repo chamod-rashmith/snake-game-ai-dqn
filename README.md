@@ -6,6 +6,7 @@ This repository contains a Deep Reinforcement Learning project that trains an AI
 
 - `main.py`: The primary entry point of the project. Run this to start the training.
 - `train.py`: Contains the game simulator (`SnakeGameAI`), the replay buffer memory, the agent setup, and the training loop.
+- `evaluate/`: Folder containing scripts and documentation for evaluating the best model in a new custom environment. See [evaluate/README.md](file:///c:/Users/Chamod_Rashmith_UOK/Desktop/programming/Deep%20Learning/project_1/evaluate/README.md) for results.
 - `src/models/base_model.py`: Defines the `DQN` neural network model.
 - `experiments/`: Stores the saved model weights (`model.pth`) and the persistent highest score record (`best_score.txt`).
 
