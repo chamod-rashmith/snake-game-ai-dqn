@@ -13,32 +13,60 @@ To test the model's ability to adapt (generalize) to unseen environments, the ev
 
 ## Evaluation Results 📈
 
-The model was tested over **10 consecutive games** with the following scores:
+### 1. Standard Evaluation (`evaluate.py`)
+Tested over **10 consecutive games**:
 
 | Game Episode | Final Score |
 |---|---|
-| Game 1/10 | **37** 🏆 |
-| Game 2/10 | 19 |
-| Game 3/10 | 5 |
-| Game 4/10 | 19 |
-| Game 5/10 | 27 |
-| Game 6/10 | 14 |
-| Game 7/10 | 8 |
-| Game 8/10 | 14 |
-| Game 9/10 | 12 |
-| Game 10/10 | 23 |
+| Game 1/10 | 32 |
+| Game 2/10 | **38** 🏆 |
+| Game 3/10 | 18 |
+| Game 4/10 | 29 |
+| Game 5/10 | 28 |
+| Game 6/10 | 19 |
+| Game 7/10 | 27 |
+| Game 8/10 | 17 |
+| Game 9/10 | 31 |
+| Game 10/10 | 16 |
 
-### Summary Statistics
-- **Average Score**: `17.80`
-- **Max Score**: `37`
-- **Min Score**: `5`
+#### Summary Statistics
+- **Average Score**: `25.50` (Previously `17.80`)
+- **Max Score**: `38`
+- **Min Score**: `16`
+
+### 2. Hard/Large Environment Evaluation (`evaluate_hard.py`)
+Tested over **10 consecutive games** on a $800 \times 600$ board with high-density barriers:
+
+| Game Episode | Final Score |
+|---|---|
+| Game 1/10 | 1 |
+| Game 2/10 | 0 |
+| Game 3/10 | **28** 🏆 |
+| Game 4/10 | 16 |
+| Game 5/10 | 17 |
+| Game 6/10 | 0 |
+| Game 7/10 | 24 |
+| Game 8/10 | 11 |
+| Game 9/10 | 8 |
+| Game 10/10 | 10 |
+
+#### Summary Statistics
+- **Average Score**: `11.50`
+- **Max Score**: `28`
+- **Min Score**: `0`
 
 ---
 
-## Why the Model Performs So Well 🧠
+## Looping Behavior & Obstacle Training 🔄🧱
 
-1. **Successful Spatial Generalization**: During training, the agent **never saw blue obstacle blocks**. However, because its state representation checks a local $5 \times 5$ collision grid around the head, it treats obstacles, walls, and its own body identically as collisions. Therefore, it generalizes seamlessly to avoid obstacles.
-2. **Determinism**: Since exploration is disabled ($\epsilon=0$), the agent takes optimal pathways to food without making risky, random exploratory maneuvers.
+### Why does it still sometimes loop/stuck?
+After introducing step penalties, loop penalties, and random obstacles during training, the snake's average performance dramatically improved. However, the snake can still get stuck in a loop occasionally.
+1. **Short Training Duration**: We only trained for one short run with these new barriers. Deep Reinforcement Learning requires many games (typically 500+ episodes) to fully adapt to complex spatial features.
+2. **Deterministic Evaluation**: During evaluation, $\epsilon = 0$. If the network finds itself in a state loop where it predicts a circular sequence of actions as the "highest Q-value", it will loop indefinitely until the step/timeout limit is reached.
+3. **Complex Barriers**: In the hard environment (`evaluate_hard.py`), dense barriers block many paths. Without enough training, the DQN cannot map the path around walls to the food efficiently, getting trapped in local loops.
+
+### Future Mitigation
+To completely eliminate looping, train the model for 1000+ episodes using the updated `train.py` which exposes the network to hundreds of different random obstacle layouts and enforces the step penalty.
 
 ---
 

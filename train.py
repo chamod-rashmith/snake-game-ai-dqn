@@ -42,6 +42,20 @@ class SnakeGameAI:
             Point(self.head.x - (2 * BLOCK_SIZE), self.head.y)
         ]
         self.score = 0
+        
+        # Generate 15 random obstacles
+        self.obstacles = []
+        for _ in range(15):
+            while True:
+                x = random.randint(0, (self.w - BLOCK_SIZE) // BLOCK_SIZE) * BLOCK_SIZE
+                y = random.randint(0, (self.h - BLOCK_SIZE) // BLOCK_SIZE) * BLOCK_SIZE
+                pt = Point(x, y)
+                # Keep a safe zone around the initial snake starting area
+                in_safe_zone = (220 < x < 420) and (180 < y < 300)
+                if pt not in self.obstacles and not in_safe_zone:
+                    self.obstacles.append(pt)
+                    break
+
         self.food = None
         self._place_food()
         self.frame_iteration = 0
@@ -50,7 +64,7 @@ class SnakeGameAI:
         x = random.randint(0, (self.w - BLOCK_SIZE) // BLOCK_SIZE) * BLOCK_SIZE
         y = random.randint(0, (self.h - BLOCK_SIZE) // BLOCK_SIZE) * BLOCK_SIZE
         self.food = Point(x, y)
-        if self.food in self.snake:
+        if self.food in self.snake or self.food in self.obstacles:
             self._place_food()
             
     def play_step(self, action):
@@ -71,9 +85,13 @@ class SnakeGameAI:
         # 3. Check if game over
         reward = 0
         game_over = False
-        if self.is_collision() or self.frame_iteration > 100 * len(self.snake):
+        if self.is_collision():
             game_over = True
             reward = -10
+            return reward, game_over, self.score
+        elif self.frame_iteration > 100 * len(self.snake):
+            game_over = True
+            reward = -15  # Loop/timeout penalty
             return reward, game_over, self.score
             
         # 4. Place new food or move tail
@@ -83,12 +101,12 @@ class SnakeGameAI:
             self._place_food()
         else:
             self.snake.pop()
-            # Reward shaping: reward for getting closer to food, penalty for getting further
+            # Reward shaping: reward for getting closer to food, penalty for getting further, with step penalty
             new_dist = np.sqrt((self.head.x - self.food.x)**2 + (self.head.y - self.food.y)**2)
             if new_dist < old_dist:
-                reward = 1
+                reward = 1 - 0.05  # Step penalty of 0.05
             else:
-                reward = -1
+                reward = -1 - 0.05 # Step penalty of 0.05
             
         # 5. Update UI and clock
         self._update_ui()
@@ -106,11 +124,19 @@ class SnakeGameAI:
         # Hits itself
         if pt in self.snake[1:]:
             return True
+        # Hits static obstacles
+        if pt in self.obstacles:
+            return True
         return False
         
     def _update_ui(self):
         self.display.fill(BLACK)
         
+        # Draw obstacles (blue, same as evaluation)
+        for pt in self.obstacles:
+            pygame.draw.rect(self.display, (70, 130, 180), pygame.Rect(pt.x, pt.y, BLOCK_SIZE, BLOCK_SIZE))
+            pygame.draw.rect(self.display, WHITE, pygame.Rect(pt.x + 4, pt.y + 4, 12, 12), 1)
+
         # Draw snake
         for i, pt in enumerate(self.snake):
             # Head is lighter green

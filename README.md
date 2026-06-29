@@ -52,9 +52,26 @@ At each step, the agent decides one of three directions relative to its current 
    - Incentivizes the agent at every step based on Euclidean distance change to food. Moving closer yields `+1`, while moving away incurs `-1`. This eliminates the issue of sparse reward signal.
 5. **Slow Exploration Decay with Minimum Floor**:
    - Decays exploration rate (`epsilon`) slower over 280 games and maintains a $5\%$ exploration minimum (`epsilon=10`) to prevent the policy from getting trapped in infinite loops.
+6. **Dynamic Obstacle Training & Loop Prevention (New)**:
+   - Added **15 randomized obstacles** generated on reset in [train.py](file:///c:/Users/Chamod_Rashmith_UOK/Desktop/programming/Deep%20Learning/project_1/train.py) (safeguarding the starting area) to teach the snake spatial obstacle navigation.
+   - Implemented a **step penalty of `-0.05`** for every step without food to break circular loops.
+   - Implemented a **loop timeout penalty of `-15`** to severely punish state lock/looping behavior.
 
 ### Training Results (300 Games)
 After implementing these fixes and improvements, the model trained successfully for 300 games, achieving a **best high score record of 38** (and consistently scoring 15-25+ in the later stages).
+
+---
+
+## Evaluation Results 📈🧪
+
+The trained DQN model was evaluated in brand-new environments with obstacles to test generalization. Detailed results and explanations of looping limits can be found in the [Evaluation README](file:///c:/Users/Chamod_Rashmith_UOK/Desktop/programming/Deep%20Learning/project_1/evaluate/README.md).
+
+* **Standard Evaluation (`evaluate.py`)**:
+  * **Average Score**: **`25.50`** (Improved from `17.80` before obstacle training)
+  * **Max Score**: `38` | **Min Score**: `16`
+* **Hard/Large Evaluation (`evaluate_hard.py`)**:
+  * **Average Score**: **`11.50`**
+  * **Max Score**: `28` | **Min Score**: `0`
 
 ---
 
