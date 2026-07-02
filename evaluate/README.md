@@ -18,42 +18,42 @@ Tested over **10 consecutive games**:
 
 | Game Episode | Final Score |
 |---|---|
-| Game 1/10 | 19 |
-| Game 2/10 | 26 |
-| Game 3/10 | 22 |
-| Game 4/10 | **41** 🏆 |
-| Game 5/10 | 12 |
-| Game 6/10 | 19 |
-| Game 7/10 | 25 |
-| Game 8/10 | 19 |
-| Game 9/10 | 24 |
-| Game 10/10 | 22 |
+| Game 1/10 | 36 |
+| Game 2/10 | 35 |
+| Game 3/10 | 32 |
+| Game 4/10 | 33 |
+| Game 5/10 | **41** 🏆 |
+| Game 6/10 | 26 |
+| Game 7/10 | 12 |
+| Game 8/10 | 22 |
+| Game 9/10 | 31 |
+| Game 10/10 | 37 |
 
 #### Summary Statistics
-- **Average Score**: `22.90`
+- **Average Score**: **`30.50`**
 - **Max Score**: `41`
 - **Min Score**: `12`
 
 ### 2. Hard/Large Environment Evaluation (`evaluate_hard.py`)
-Tested over **10 consecutive games** on a $800 \times 600$ board with high-density barriers:
+Tested over **10 consecutive games** on an $800 \times 600$ board with high-density barriers:
 
 | Game Episode | Final Score |
 |---|---|
-| Game 1/10 | 13 |
-| Game 2/10 | 23 |
-| Game 3/10 | 26 |
-| Game 4/10 | 20 |
-| Game 5/10 | 21 |
-| Game 6/10 | **31** 🏆 |
-| Game 7/10 | 14 |
-| Game 8/10 | 3 |
-| Game 9/10 | 18 |
-| Game 10/10 | 21 |
+| Game 1/10 | 25 |
+| Game 2/10 | 9 |
+| Game 3/10 | **40** 🏆 |
+| Game 4/10 | 3 |
+| Game 5/10 | 6 |
+| Game 6/10 | 19 |
+| Game 7/10 | 1 |
+| Game 8/10 | 23 |
+| Game 9/10 | 4 |
+| Game 10/10 | 0 |
 
 #### Summary Statistics
-- **Average Score**: `19.00`
-- **Max Score**: `31`
-- **Min Score**: `3`
+- **Average Score**: **`13.00`**
+- **Max Score**: `40`
+- **Min Score**: `0`
 
 ---
 
@@ -94,6 +94,9 @@ uv run python evaluate/evaluate_hard.py
 
 # XAI Saliency evaluation
 uv run python evaluate/evaluate_xai.py
+
+# Two Foods evaluation (spawns 2 foods simultaneously)
+uv run python evaluate/evaluate_two_foods.py
 ```
 
 ---
@@ -125,4 +128,35 @@ Three key plots are generated in the `evaluate/plots/` folder:
   - The cells **directly adjacent** to the head (distance 1: top, bottom, left, right) have the highest saliency. This makes perfect physical sense because an obstacle there represents immediate death.
   - The cells at distance 2 have lower but non-zero saliency, indicating the model does a small amount of look-ahead path planning.
 - **Verdict**: **Excellent**. The model has correctly prioritized immediate hazard zones, proving it has learned a robust, biologically-plausible spatial avoidance strategy instead of memorizing paths.
+
+---
+
+## 3. Two Foods Evaluation Environment (`evaluate_two_foods.py`) 🍎🍎
+
+To explore how the DQN model handles multiple resource options simultaneously, we built an evaluation environment that spawns **2 foods** on the board at the same time:
+
+### Methodology:
+- Since the DQN's input state is designed for a single food direction, the evaluator dynamically calculates the Manhattan distance from the snake's head to both foods at every frame and feeds the **direction of the closest food** to the model.
+- When the head eats a food, a new food is immediately placed randomly, keeping the active food count at 2.
+
+### Results:
+Tested over **5 consecutive games**:
+
+| Game Episode | Final Score |
+|---|---|
+| Game 1/5 | 14 |
+| Game 2/5 | 31 |
+| Game 3/5 | 33 |
+| Game 4/5 | 30 |
+| Game 5/5 | 31 |
+
+#### Summary Statistics
+- **Average Score**: **`27.80`** (Slightly lower than standard 1-food evaluation of **`30.50`**)
+- **Max Score**: `33` | **Min Score**: `14`
+
+### Analysis: Trade-offs & Observations
+1. **Target Oscillation (The Penalty)**: Because the model was trained with a single target, the state representation always points to one destination. With two foods, if the snake is positioned nearly equidistant between them, moving a single step can cause the "closest food" to toggle back and forth. This rapid oscillation of the input food direction features can confuse the network, causing it to hesitate, make sub-optimal double-turns, or get trapped in local loops.
+2. **Reduced Path Travel (The Benefit)**: When not oscillating, having two foods significantly decreases the average distance to the nearest resource, reducing travel steps and lowering collision risks in open areas.
+3. **Verdict**: The high baseline standard score of `30.50` proves the single-food navigation policy is extremely well-optimized. The two-foods setup offers a good generalization test, but requires joint training (exposing the network to moving/multiple targets) to eliminate the oscillation penalty.
+
 

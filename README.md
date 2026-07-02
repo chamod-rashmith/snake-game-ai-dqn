@@ -67,15 +67,19 @@ After implementing these fixes and improvements, the model trained successfully 
 The trained DQN model was evaluated in brand-new environments with obstacles to test generalization, including a gradient-based XAI analysis to interpret model decisions. Detailed explanations of looping limits, saliency heatmaps, and plots can be found in the [Evaluation README](evaluate/README.md).
 
 * **Standard Evaluation (`evaluate.py`)**:
-  * **Average Score**: **`25.50`** (Improved from `17.80` before obstacle training)
-  * **Max Score**: `38` | **Min Score**: `16`
+  * **Average Score**: **`30.50`** (Improved from the earlier baseline)
+  * **Max Score**: `41` | **Min Score**: `12`
 * **Hard/Large Evaluation (`evaluate_hard.py`)**:
-  * **Average Score**: **`11.50`**
-  * **Max Score**: `28` | **Min Score**: `0`
+  * **Average Score**: **`13.00`**
+  * **Max Score**: `40` | **Min Score**: `0`
 * **XAI Saliency Evaluation (`evaluate_xai.py`) [NEW]**:
   * **Steps**: `259` | **Final Score**: `16` (in standard obstacle environment)
   * **Q-Values Over Time**: Verifies clear action preferences and dynamic adaptation near hazards.
   * **Saliency Heatmap**: Confirms the model focuses heavily on cells **directly adjacent** to the head, showing it has successfully learned spatial collision avoidance.
+* **Two Foods Evaluation (`evaluate_two_foods.py`) [NEW]**:
+  * Spawns **2 foods simultaneously**.
+  * **Average Score**: **`27.80`** | **Max Score**: `33` | **Min Score**: `14`
+  * **Analysis**: While having two resources reduces travel distance, it introduces *target oscillation* (toggling back and forth between equidistant foods), which slightly penalizes the score compared to the highly-optimized standard baseline of `30.50`.
 
 ---
 
@@ -115,5 +119,8 @@ uv run python evaluate/evaluate_hard.py
 
 # Explainable AI (XAI) Saliency evaluation (generates analysis plots)
 uv run python evaluate/evaluate_xai.py
+
+# Two Foods evaluation (spawns 2 foods simultaneously)
+uv run python evaluate/evaluate_two_foods.py
 ```
 The analysis plots will be saved inside the `evaluate/plots/` directory.
