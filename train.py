@@ -437,7 +437,7 @@ def train():
         game.reset(config=current_phase)
         print(f"Starting training on Phase {current_phase['phase_index']} (Game {agent.n_games})")
     
-    max_games = 300
+    max_games = 400
     while agent.n_games < max_games:
         # Check if phase needs to transition at start of game
         phase_config = get_current_phase_config(agent.n_games, curriculum_config)

@@ -6,7 +6,7 @@ This repository contains a Deep Reinforcement Learning project that trains an AI
 
 - `main.py`: The primary entry point of the project. Run this to start the training.
 - `train.py`: Contains the game simulator (`SnakeGameAI`), the replay buffer memory, the agent setup, and the training loop.
-- `evaluate/`: Folder containing scripts and documentation for evaluating the best model in a new custom environment. See [evaluate/README.md](file:///c:/Users/Chamod_Rashmith_UOK/Desktop/programming/Deep%20Learning/project_1/evaluate/README.md) for results.
+- `evaluate/`: Folder containing scripts and documentation for evaluating the best model in a new custom environment. See [evaluate/README.md](evaluate/README.md) for results.
 - `src/models/base_model.py`: Defines the `DQN` neural network model.
 - `experiments/`: Stores the saved model weights (`model.pth`) and the persistent highest score record (`best_score.txt`).
 
@@ -53,7 +53,7 @@ At each step, the agent decides one of three directions relative to its current 
 5. **Slow Exploration Decay with Minimum Floor**:
    - Decays exploration rate (`epsilon`) slower over 280 games and maintains a $5\%$ exploration minimum (`epsilon=10`) to prevent the policy from getting trapped in infinite loops.
 6. **Dynamic Obstacle Training & Loop Prevention (New)**:
-   - Added **15 randomized obstacles** generated on reset in [train.py](file:///c:/Users/Chamod_Rashmith_UOK/Desktop/programming/Deep%20Learning/project_1/train.py) (safeguarding the starting area) to teach the snake spatial obstacle navigation.
+   - Added **15 randomized obstacles** generated on reset in [train.py](train.py) (safeguarding the starting area) to teach the snake spatial obstacle navigation.
    - Implemented a **step penalty of `-0.05`** for every step without food to break circular loops.
    - Implemented a **loop timeout penalty of `-15`** to severely punish state lock/looping behavior.
 
@@ -62,9 +62,9 @@ After implementing these fixes and improvements, the model trained successfully 
 
 ---
 
-## Evaluation Results 📈🧪
+## Evaluation & Explainable AI (XAI) Results 📈🧪
 
-The trained DQN model was evaluated in brand-new environments with obstacles to test generalization. Detailed results and explanations of looping limits can be found in the [Evaluation README](file:///c:/Users/Chamod_Rashmith_UOK/Desktop/programming/Deep%20Learning/project_1/evaluate/README.md).
+The trained DQN model was evaluated in brand-new environments with obstacles to test generalization, including a gradient-based XAI analysis to interpret model decisions. Detailed explanations of looping limits, saliency heatmaps, and plots can be found in the [Evaluation README](evaluate/README.md).
 
 * **Standard Evaluation (`evaluate.py`)**:
   * **Average Score**: **`25.50`** (Improved from `17.80` before obstacle training)
@@ -72,24 +72,48 @@ The trained DQN model was evaluated in brand-new environments with obstacles to 
 * **Hard/Large Evaluation (`evaluate_hard.py`)**:
   * **Average Score**: **`11.50`**
   * **Max Score**: `28` | **Min Score**: `0`
+* **XAI Saliency Evaluation (`evaluate_xai.py`) [NEW]**:
+  * **Steps**: `259` | **Final Score**: `16` (in standard obstacle environment)
+  * **Q-Values Over Time**: Verifies clear action preferences and dynamic adaptation near hazards.
+  * **Saliency Heatmap**: Confirms the model focuses heavily on cells **directly adjacent** to the head, showing it has successfully learned spatial collision avoidance.
 
 ---
 
 ## How to Run 🚀
 
-### 1. Install Dependencies
-Make sure you have PyTorch and Pygame installed:
+This project uses **[uv](https://github.com/astral-sh/uv)** for fast, reliable Python package and environment management.
+
+### 1. Install uv
+If you don't have `uv` installed, you can install it using pip:
+```bash
+pip install uv
+```
+*For other installation methods (e.g., curl, Homebrew), check the [uv installation guide](https://docs.astral.sh/uv/getting-started/installation/).*
+
+### 2. Set Up Virtual Environment & Dependencies
+Initialize and sync the virtual environment with the project dependencies specified in `pyproject.toml`:
 ```bash
 uv sync
 ```
-*or using standard pip:*
-```bash
-pip install pygame torch numpy
-```
+This command automatically creates a `.venv` directory and installs all the required packages (PyTorch, Pygame, NumPy, Matplotlib, Seaborn).
 
-### 2. Run Training
-Simply run the `main.py` script:
+### 3. Run Training
+To start training the DQN model, execute the main entrypoint:
 ```bash
-python main.py
+uv run python main.py
 ```
-A Pygame window will pop up showing the snake learning in real-time. Training progress and record scores will be outputted in your terminal.
+A Pygame window will open showing the snake training in real-time. Training progress and best score records will be outputted to your terminal.
+
+### 4. Run Evaluation & XAI Saliency Analysis
+To evaluate the best model checkpoint (`experiments/model.pth`) in the custom evaluation environments:
+```bash
+# Standard evaluation
+uv run python evaluate/evaluate.py
+
+# Hard evaluation (Large board + dense barriers)
+uv run python evaluate/evaluate_hard.py
+
+# Explainable AI (XAI) Saliency evaluation (generates analysis plots)
+uv run python evaluate/evaluate_xai.py
+```
+The analysis plots will be saved inside the `evaluate/plots/` directory.

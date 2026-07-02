@@ -74,7 +74,7 @@ To completely eliminate looping, train the model for 1000+ episodes using the up
 
 We also built a second, significantly more difficult evaluation environment to stretch the boundaries of the model's spatial adaptability:
 
-- **Script**: [evaluate_hard.py](file:///c:/Users/Chamod_Rashmith_UOK/Desktop/programming/Deep%20Learning/project_1/evaluate/evaluate_hard.py)
+- **Script**: [evaluate_hard.py](evaluate_hard.py)
 - **Large Board Size**: Expanded the environment to **$800 \times 600$ pixels** (much larger than the default training grid).
 - **High-Density Barriers**:
   - Border inner ridges at all 4 corners.
@@ -84,11 +84,45 @@ We also built a second, significantly more difficult evaluation environment to s
   - Several isolated pillar blocks acting as obstacles.
 
 ### How to Run:
-Run either script from the project root:
+Run the evaluation scripts from the project root directory using **uv**:
 ```bash
 # Standard evaluation
-.venv/Scripts/python.exe evaluate/evaluate.py
+uv run python evaluate/evaluate.py
 
 # Hard evaluation (Large board + dense obstacles)
-.venv/Scripts/python.exe evaluate/evaluate_hard.py
+uv run python evaluate/evaluate_hard.py
+
+# XAI Saliency evaluation
+uv run python evaluate/evaluate_xai.py
 ```
+
+---
+
+## Explainable AI (XAI) & Model Decision Analysis 🔍🧠
+
+To understand *how* our DQN model makes decisions and verify if it has truly learned generalizable features, we implemented a feature-attribution saliency evaluation in [evaluate_xai.py](evaluate_xai.py). 
+
+During evaluation, the agent's actions are monitored and analyzed using gradient-based saliency maps ($S(s) = \left| \frac{\partial Q(s, a_{\text{chosen}})}{\partial s} \right|$). This shows which inputs (features) the network relies on most when choosing an action.
+
+Three key plots are generated in the `evaluate/plots/` folder:
+
+### 1. Action Value (Q-Value) Trajectory 📈
+- **Plot**: [q_values_over_time.png](plots/q_values_over_time.png)
+- **Observations**: The Q-values for the three actions (`Straight`, `Right`, `Left`) fluctuate dynamically. When the snake is in open space, the Q-values are relatively stable and high. As the snake approaches a wall or its own body, the Q-value for the dangerous direction drops sharply, while the Q-value for the safe turn rises.
+- **Verdict**: **Good**. The network shows clear preference distinctions rather than random or flat Q-predictions, confirming that the policy is confident and highly responsive to environmental changes.
+
+### 2. Feature Group Saliency 📊
+- **Plot**: [feature_importance_groups.png](plots/feature_importance_groups.png)
+- **Observations**: 
+  - **Local 5x5 Vision (Obstacles)**: Has a high average gradient magnitude, showing the network is constantly reading the grid for walls/self-body.
+  - **Food Direction**: Exhibits strong importance, showing the agent is heavily driven by target-seeking behavior.
+  - **Current Direction**: Acts as a state context helper to prevent moving backwards.
+- **Verdict**: **Balanced & Good**. The network successfully balances safety (avoiding obstacles) and goal-seeking (finding food).
+
+### 3. Spatial Saliency Heatmap (5x5 Grid) 🗺️🔥
+- **Plot**: [grid_saliency_heatmap.png](plots/grid_saliency_heatmap.png)
+- **Observations**: 
+  - The cells **directly adjacent** to the head (distance 1: top, bottom, left, right) have the highest saliency. This makes perfect physical sense because an obstacle there represents immediate death.
+  - The cells at distance 2 have lower but non-zero saliency, indicating the model does a small amount of look-ahead path planning.
+- **Verdict**: **Excellent**. The model has correctly prioritized immediate hazard zones, proving it has learned a robust, biologically-plausible spatial avoidance strategy instead of memorizing paths.
+

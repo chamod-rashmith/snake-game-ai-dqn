@@ -7,9 +7,9 @@
       "h": 480,
       "num_random_obstacles": 0,
       "use_complex_barriers": false,
-      "food_reward": 15,
-      "collision_penalty": -15,
-      "timeout_penalty": -15,
+      "food_reward": 25,
+      "collision_penalty": -100,
+      "timeout_penalty": -50,
       "step_penalty": -0.05,
       "use_bfs_distance": true
     },
@@ -20,9 +20,9 @@
       "h": 480,
       "num_random_obstacles": 15,
       "use_complex_barriers": false,
-      "food_reward": 20,
-      "collision_penalty": -15,
-      "timeout_penalty": -15,
+      "food_reward": 35,
+      "collision_penalty": -150,
+      "timeout_penalty": -70,
       "step_penalty": -0.08,
       "use_bfs_distance": true
     },
@@ -33,9 +33,9 @@
       "h": 600,
       "num_random_obstacles": 10,
       "use_complex_barriers": true,
-      "food_reward": 25,
-      "collision_penalty": -20,
-      "timeout_penalty": -20,
+      "food_reward": 50,
+      "collision_penalty": -200,
+      "timeout_penalty": -100,
       "step_penalty": -0.10,
       "use_bfs_distance": true
     }
