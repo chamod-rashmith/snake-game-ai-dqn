@@ -335,7 +335,8 @@ class Agent:
         return np.array(state, dtype=int)
         
     def get_action(self, state):
-        self.epsilon = max(10, 80 - (self.n_games / 4))
+        # Decays from 80 (~40% exploration) down to 2 (~1% exploration) over 780 games
+        self.epsilon = max(2, 80 - (self.n_games / 10))
         final_move = [0, 0, 0]
         if random.randint(0, 200) < self.epsilon:
             move = random.randint(0, 2)
@@ -437,7 +438,7 @@ def train():
         game.reset(config=current_phase)
         print(f"Starting training on Phase {current_phase['phase_index']} (Game {agent.n_games})")
     
-    max_games = 400
+    max_games = 1000
     while agent.n_games < max_games:
         # Check if phase needs to transition at start of game
         phase_config = get_current_phase_config(agent.n_games, curriculum_config)
