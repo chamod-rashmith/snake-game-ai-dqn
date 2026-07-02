@@ -18,42 +18,42 @@ Tested over **10 consecutive games**:
 
 | Game Episode | Final Score |
 |---|---|
-| Game 1/10 | 36 |
-| Game 2/10 | 35 |
-| Game 3/10 | 32 |
-| Game 4/10 | 33 |
-| Game 5/10 | **41** 🏆 |
-| Game 6/10 | 26 |
-| Game 7/10 | 12 |
-| Game 8/10 | 22 |
-| Game 9/10 | 31 |
-| Game 10/10 | 37 |
+| Game 1/10 | 10 |
+| Game 2/10 | **49** 🏆 |
+| Game 3/10 | 45 |
+| Game 4/10 | 13 |
+| Game 5/10 | 7 |
+| Game 6/10 | 17 |
+| Game 7/10 | 4 |
+| Game 8/10 | 32 |
+| Game 9/10 | 34 |
+| Game 10/10 | 22 |
 
 #### Summary Statistics
-- **Average Score**: **`30.50`**
-- **Max Score**: `41`
-- **Min Score**: `12`
+- **Average Score**: **`23.30`**
+- **Max Score**: `49`
+- **Min Score**: `4`
 
 ### 2. Hard/Large Environment Evaluation (`evaluate_hard.py`)
 Tested over **10 consecutive games** on an $800 \times 600$ board with high-density barriers:
 
 | Game Episode | Final Score |
 |---|---|
-| Game 1/10 | 25 |
-| Game 2/10 | 9 |
-| Game 3/10 | **40** 🏆 |
-| Game 4/10 | 3 |
-| Game 5/10 | 6 |
+| Game 1/10 | 1 |
+| Game 2/10 | 4 |
+| Game 3/10 | 3 |
+| Game 4/10 | **42** 🏆 |
+| Game 5/10 | 4 |
 | Game 6/10 | 19 |
-| Game 7/10 | 1 |
-| Game 8/10 | 23 |
-| Game 9/10 | 4 |
-| Game 10/10 | 0 |
+| Game 7/10 | 22 |
+| Game 8/10 | 7 |
+| Game 9/10 | 10 |
+| Game 10/10 | 4 |
 
 #### Summary Statistics
-- **Average Score**: **`13.00`**
-- **Max Score**: `40`
-- **Min Score**: `0`
+- **Average Score**: **`11.60`**
+- **Max Score**: `42`
+- **Min Score**: `1`
 
 ---
 
@@ -145,18 +145,18 @@ Tested over **5 consecutive games**:
 | Game Episode | Final Score |
 |---|---|
 | Game 1/5 | 14 |
-| Game 2/5 | 31 |
-| Game 3/5 | 33 |
-| Game 4/5 | 30 |
-| Game 5/5 | 31 |
+| Game 2/5 | 8 |
+| Game 3/5 | **26** 🏆 |
+| Game 4/5 | 16 |
+| Game 5/5 | 24 |
 
 #### Summary Statistics
-- **Average Score**: **`27.80`** (Slightly lower than standard 1-food evaluation of **`30.50`**)
-- **Max Score**: `33` | **Min Score**: `14`
+- **Average Score**: **`17.60`** (Slightly lower than standard 1-food evaluation of **`23.30`**)
+- **Max Score**: `26` | **Min Score**: `8`
 
 ### Analysis: Trade-offs & Observations
 1. **Target Oscillation (The Penalty)**: Because the model was trained with a single target, the state representation always points to one destination. With two foods, if the snake is positioned nearly equidistant between them, moving a single step can cause the "closest food" to toggle back and forth. This rapid oscillation of the input food direction features can confuse the network, causing it to hesitate, make sub-optimal double-turns, or get trapped in local loops.
 2. **Reduced Path Travel (The Benefit)**: When not oscillating, having two foods significantly decreases the average distance to the nearest resource, reducing travel steps and lowering collision risks in open areas.
-3. **Verdict**: The high baseline standard score of `30.50` proves the single-food navigation policy is extremely well-optimized. The two-foods setup offers a good generalization test, but requires joint training (exposing the network to moving/multiple targets) to eliminate the oscillation penalty.
+3. **Verdict**: The high baseline standard score of `23.30` proves the single-food navigation policy is extremely well-optimized. The two-foods setup offers a good generalization test, but requires joint training (exposing the network to moving/multiple targets) to eliminate the oscillation penalty.
 
 

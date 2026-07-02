@@ -67,19 +67,19 @@ After implementing these fixes and improvements, the model trained successfully 
 The trained DQN model was evaluated in brand-new environments with obstacles to test generalization, including a gradient-based XAI analysis to interpret model decisions. Detailed explanations of looping limits, saliency heatmaps, and plots can be found in the [Evaluation README](evaluate/README.md).
 
 * **Standard Evaluation (`evaluate.py`)**:
-  * **Average Score**: **`30.50`** (Improved from the earlier baseline)
-  * **Max Score**: `41` | **Min Score**: `12`
+  * **Average Score**: **`23.30`**
+  * **Max Score**: `49` | **Min Score**: `4`
 * **Hard/Large Evaluation (`evaluate_hard.py`)**:
-  * **Average Score**: **`13.00`**
-  * **Max Score**: `40` | **Min Score**: `0`
+  * **Average Score**: **`11.60`**
+  * **Max Score**: `42` | **Min Score**: `1`
 * **XAI Saliency Evaluation (`evaluate_xai.py`) [NEW]**:
-  * **Steps**: `259` | **Final Score**: `16` (in standard obstacle environment)
+  * **Steps**: `284` | **Final Score**: `19` (in standard obstacle environment)
   * **Q-Values Over Time**: Verifies clear action preferences and dynamic adaptation near hazards.
   * **Saliency Heatmap**: Confirms the model focuses heavily on cells **directly adjacent** to the head, showing it has successfully learned spatial collision avoidance.
 * **Two Foods Evaluation (`evaluate_two_foods.py`) [NEW]**:
   * Spawns **2 foods simultaneously**.
-  * **Average Score**: **`27.80`** | **Max Score**: `33` | **Min Score**: `14`
-  * **Analysis**: While having two resources reduces travel distance, it introduces *target oscillation* (toggling back and forth between equidistant foods), which slightly penalizes the score compared to the highly-optimized standard baseline of `30.50`.
+  * **Average Score**: **`17.60`** | **Max Score**: `26` | **Min Score**: `8`
+  * **Analysis**: While having two resources reduces travel distance, it introduces *target oscillation* (toggling back and forth between equidistant foods), which slightly penalizes the score compared to the highly-optimized standard baseline of `23.30`.
 
 ---
 
