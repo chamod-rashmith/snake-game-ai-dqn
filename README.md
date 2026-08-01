@@ -6,9 +6,10 @@ This repository contains a Deep Reinforcement Learning project that trains an AI
 
 - `main.py`: The primary entry point of the project. Run this to start the training.
 - `train.py`: Contains the game simulator (`SnakeGameAI`), the replay buffer memory, the agent setup, and the training loop.
-- `evaluate/`: Folder containing scripts and documentation for evaluating the best model in a new custom environment. See [evaluate/README.md](evaluate/README.md) for results.
+- `demo/`: Contains the interactive Pygame visualization demo (`interactive_demo.py`) with real-time Q-value graphs and manual override. See [demo/README.md](demo/README.md).
+- `evaluate/`: Folder containing scripts and documentation for evaluating the best model in new custom environments and XAI feature analysis. See [evaluate/README.md](evaluate/README.md) for results.
 - `src/models/base_model.py`: Defines the `DQN` neural network model.
-- `experiments/`: Stores the saved model weights (`model.pth`) and the persistent highest score record (`best_score.txt`).
+- `experiments/`: Stores the saved model weights (`model.pth`), curriculum configurations, and high score records.
 
 ---
 
@@ -108,7 +109,13 @@ uv run python main.py
 ```
 A Pygame window will open showing the snake training in real-time. Training progress and best score records will be outputted to your terminal.
 
-### 4. Run Evaluation & XAI Saliency Analysis
+### 4. Run Interactive Demo & Visualizations
+To watch the trained agent play in real time with interactive Q-value dashboards and manual override mode:
+```bash
+uv run python demo/interactive_demo.py
+```
+
+### 5. Run Evaluation & XAI Saliency Analysis
 To evaluate the best model checkpoint (`experiments/model.pth`) in the custom evaluation environments:
 ```bash
 # Standard evaluation
@@ -124,3 +131,4 @@ uv run python evaluate/evaluate_xai.py
 uv run python evaluate/evaluate_two_foods.py
 ```
 The analysis plots will be saved inside the `evaluate/plots/` directory.
+
